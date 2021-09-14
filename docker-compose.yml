@@ -1,0 +1,51 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: s_db
+    image: mysql:5.7
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/var/lib/mysql
+      - ./backups/db:/var/backups
+#      - ./db/my.cnf:/etc/mysql/my.cnf
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+
+  php:
+    build: ./php
+    container_name: s_php
+    restart: unless-stopped
+    working_dir: ${APP_PATH_CONTAINER}
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}:cached
+      - ./logs/symfony:${APP_PATH_CONTAINER}/var/log:cached
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+
+  nginx:
+    depends_on:
+      - php
+    build: ./nginx
+    container_name: s_nginx
+    volumes:
+      - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
+#      - ./logs/nginx:/var/log
+    working_dir: ${APP_PATH_CONTAINER}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    env_file:
+      - ./.env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
