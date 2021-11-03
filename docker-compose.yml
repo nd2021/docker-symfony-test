@@ -8,9 +8,8 @@ services:
     ports:
       - "3306:3306" # на проде быть не должно. Сделано для удобства при разработке
     volumes:
-      - ./db:/var/lib/mysql
+      - dbdata:/var/lib/mysql
       - ./backups/db:/var/backups
-#      - ./db/my.cnf:/etc/mysql/my.cnf
     env_file:
       - ./.env
     networks:
@@ -36,7 +35,6 @@ services:
     container_name: s_nginx
     volumes:
       - ${APP_PATH_HOST}:${APP_PATH_CONTAINER}
-#      - ./logs/nginx:/var/log
     working_dir: ${APP_PATH_CONTAINER}
     restart: unless-stopped
     ports:
@@ -45,6 +43,9 @@ services:
       - ./.env
     networks:
       - app-network
+
+volumes:
+  dbdata:
 
 networks:
   app-network:
