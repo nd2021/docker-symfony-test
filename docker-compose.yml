@@ -3,10 +3,10 @@ version: '3.9'
 services:
   db:
     container_name: s_db
-    image: mysql:5.7
+    image: mysql:8.0
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3306:3306" # на проде быть не должно. Сделано для удобства при разработке
     volumes:
       - ./db:/var/lib/mysql
       - ./backups/db:/var/backups
